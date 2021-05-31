@@ -33,10 +33,10 @@ class Generator:
 def load_generator_csv():
   words = []
   counts = []
-  with open(os.path.join(__file__, "data/unigram_freq.csv")) as f:
+  with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "data", "unigram_freq.csv")) as f:
     reader = csv.reader(f)
     _header = next(reader)
     for word,count in reader:
       words.append(word)
-      counts.append(count)
+      counts.append(int(count))
   return words, np.array(counts)
