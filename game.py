@@ -26,6 +26,9 @@ class Hangman():
     self.guesses = []
 
   @property
+  def length(self): return len(self.words)
+
+  @property
   def gameover(self):
     return self.misses >= self.max_misses or np.all(self.filled)
 
@@ -37,8 +40,7 @@ class Hangman():
     if self.gameover:
       raise ValueError('No more guesses remaining.')
 
-    if char in self.guesses:
-      return
+    if char in self.guesses: return []
 
     self.attempts += 1
     idxs = np.where((self.words - char) == 0)[0]
