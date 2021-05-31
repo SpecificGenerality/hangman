@@ -1,6 +1,6 @@
 from typing import Set
 
-from constants import DEFAULT_TRIES
+from constants import DEFAULT_MAX_MISSES
 
 
 class WordSet:
@@ -30,5 +30,5 @@ class WordSet:
 
 
 class Solver:
-    def __init__(self, length: int, tries=DEFAULT_TRIES):
+    def __init__(self, length: int, tries=DEFAULT_MAX_MISSES):
         pass
