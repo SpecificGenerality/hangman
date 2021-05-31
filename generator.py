@@ -5,6 +5,9 @@ from numpy.core.fromnumeric import sort
 
 from constants import MAX_DIFFICULTY, MIN_DIFFICULTY
 
+import csv
+import os
+
 
 class Generator:
     @classmethod
@@ -25,3 +28,14 @@ class Generator:
   lower_idx = np.where(bootstrap_cdf >= lower_bound)[0][0]
   upper_idx = np.where(bootstrap_cdf >= upper_bound)[0][0] if difficulty < MAX_DIFFICULTY else len(words)
   return np.random.choice(sorted_words[lower_idx:upper_idx])
+
+def load_generator_csv():
+  words = []
+  counts = []
+  with open(os.path.join(__file__, "data/unigram_freq.csv")) as f:
+    reader = csv.reader(f)
+    _header = next(reader)
+    for word,count in reader:
+      words.append(word)
+      counts.append(count)
+  return words, np.array(counts)
