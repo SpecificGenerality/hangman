@@ -1,3 +1,5 @@
 DEFAULT_MAX_MISSES = 6
 MIN_DIFFICULTY = 1
 MAX_DIFFICULTY = 10
+
+ALL_CHARS = list(range(ord('a'), ord('z')+1))

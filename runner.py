@@ -3,7 +3,8 @@ import argparse
 from constants import DEFAULT_MAX_MISSES
 from game import Hangman, it_to_str
 from generator import Generator, load_generator_csv
-from solver import ( Solver, WordSet )
+from solver import Solver, WordSet
+
 
 def get_letter(prompt: str) -> int:
   while True:
@@ -12,7 +13,7 @@ def get_letter(prompt: str) -> int:
       if len(letter) != 1:
         continue
       letter = letter.lower()
-      if ord(letter) - ord('a') < 0 or ord(letter) - ord('a') >= 26:
+      if ord(letter) < ord('a') or ord(letter) > ord('z'):
         continue
       break
     except ValueError:

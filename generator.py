@@ -20,7 +20,7 @@ class Generator:
       raise ValueError('Not enough words.')
 
     normalized_frequencies = frequencies / max(frequencies)
-    sorted_idxs = np.argsort(normalized_frequencies)
+    sorted_idxs = np.flip(np.argsort(normalized_frequencies))
     normalized_frequencies = normalized_frequencies[sorted_idxs]
     sorted_words = np.array(words)[sorted_idxs]
     bootstrap_cdf = np.cumsum(normalized_frequencies / sum(normalized_frequencies))

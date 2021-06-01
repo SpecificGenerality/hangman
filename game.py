@@ -26,9 +26,6 @@ class Hangman():
     self.guesses = []
 
   @property
-  def length(self): return len(self.words)
-
-  @property
   def gameover(self):
     return self.misses >= self.max_misses or np.all(self.filled)
 
@@ -48,6 +45,8 @@ class Hangman():
     self.filled[idxs] = True
     self.guesses.append(char)
     return idxs
+
+  def __len__(self): return len(self.words)
 
   def __str__(self):
     partial_word = np.array([ord('_') for _ in range(len(self.words))])

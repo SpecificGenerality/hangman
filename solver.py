@@ -1,10 +1,9 @@
+import random
 from typing import Set
 
-from constants import DEFAULT_MAX_MISSES
+from constants import ALL_CHARS
 from game import Hangman
-import random
 
-ALL_CHARS = list(range(ord('a'), ord('z')+1))
 
 class WordSet:
   def __init__(self, words: Set[str], length: int):
@@ -14,9 +13,6 @@ class WordSet:
     self._wordset = set(filter(lambda x: len(x) == length, words))
     self._word_length = length
     self._pruned_letters = set()
-
-  @property
-  def length(self): return self._word_length
 
   def prune(self, letter: str, idxs: set[int]) -> None:
     if len(letter) != 1: raise ValueError(f'Can only prune by letter.')
@@ -31,6 +27,7 @@ class WordSet:
     self._wordset = self._wordset.difference(removed)
     self._pruned_letters.add(letter)
     return
+
   def best_curr(self):
     counts = {}
     for word in self._wordset:
@@ -42,6 +39,7 @@ class WordSet:
       return chr(random.choice([c for c in ALL_CHARS if chr(c) not in self._pruned_letters]))
     return max(counts.keys(), key=lambda k: counts[k])
 
+  def __len__(self): return self._word_length
 
 class Solver:
   def __init__(
@@ -49,9 +47,10 @@ class Solver:
     game: Hangman,
     word_set: WordSet,
   ):
-    assert(game.length == word_set.length)
+    assert(len(game) == len(word_set))
     self.game = game
     self.word_set = word_set
+
   def step(self):
     next_char = self.word_set.best_curr()
     idxs = self.game.guess(ord(next_char))
