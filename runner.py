@@ -3,7 +3,7 @@ import argparse
 from constants import DEFAULT_MAX_MISSES
 from game import Hangman, it_to_str
 from generator import Generator, load_generator_csv
-from solver import Solver, WordSet
+from solver import FreqWordSet, Solver, WordSet
 
 
 def get_letter(prompt: str) -> int:
@@ -45,7 +45,7 @@ def solve(difficulty: int, max_misses: int, word: str = None):
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
   G = Hangman(word, max_misses)
-  WS = WordSet(words, len(word))
+  WS = FreqWordSet(words, counts, len(word))
   S = Solver(G, WS)
   print("Word is", word)
   while not G.gameover:
