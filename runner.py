@@ -20,9 +20,10 @@ def get_letter(prompt: str) -> int:
 
   return ord(letter)
 
-def run(difficulty: int, max_misses: int):
+def run(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_csv()
-  word = Generator.generate_word_by_frequency(words, counts, difficulty)
+  if word is None:
+    word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
   G = Hangman(word, max_misses)
   while not G.gameover:
@@ -37,9 +38,10 @@ def run(difficulty: int, max_misses: int):
 
   print(f'The word: {it_to_str(G.words)}')
 
-def solve(difficulty: int, max_misses: int):
+def solve(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_csv()
-  word = Generator.generate_word_by_frequency(words, counts, difficulty)
+  if word is None:
+    word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
   G = Hangman(word, max_misses)
   WS = WordSet(words, len(word))
@@ -61,8 +63,9 @@ if __name__ == '__main__':
   )
   parser.add_argument('--max-misses', type=int, default=DEFAULT_MAX_MISSES)
   parser.add_argument('--solve', action='store_true')
+  parser.add_argument('--word', type=str, default=None)
 
   args = parser.parse_args()
 
-  if args.solve: solve(args.difficulty, args.max_misses)
-  else: run(args.difficulty, args.max_misses)
+  if args.solve: solve(args.difficulty, args.max_misses, args.word)
+  else: run(args.difficulty, args.max_misses, args.word)
