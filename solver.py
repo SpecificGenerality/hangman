@@ -2,7 +2,9 @@ from typing import Set
 
 from constants import DEFAULT_MAX_MISSES
 from game import Hangman
+import random
 
+ALL_CHARS = list(range(ord('a'), ord('z')+1))
 
 class WordSet:
   def __init__(self, words: Set[str], length: int):
@@ -36,6 +38,8 @@ class WordSet:
         counts[char] = counts.get(char, 0) + 1
 
     for letter in self._pruned_letters: counts.pop(letter, None)
+    if len(counts) == 0:
+      return chr(random.choice([c for c in ALL_CHARS if chr(c) not in self._pruned_letters]))
     return max(counts.keys(), key=lambda k: counts[k])
 
 
