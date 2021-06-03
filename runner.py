@@ -2,7 +2,7 @@ import argparse
 
 from constants import DEFAULT_MAX_MISSES
 from game import Hangman, it_to_str
-from generator import Generator, load_generator_csv
+from generator import Generator, load_generator_csv, load_generator_txt
 from solver import FreqWordSet, Solver, WordSet
 
 
@@ -22,7 +22,7 @@ def get_letter(prompt: str) -> int:
   return ord(letter)
 
 def run(difficulty: int, max_misses: int, word: str = None):
-  words, counts = load_generator_csv()
+  words, counts = load_generator_txt()
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
@@ -40,7 +40,7 @@ def run(difficulty: int, max_misses: int, word: str = None):
   print(f'The word: {it_to_str(G.words)}')
 
 def solve(difficulty: int, max_misses: int, word: str = None):
-  words, counts = load_generator_csv()
+  words, counts = load_generator_txt()
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
