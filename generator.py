@@ -24,8 +24,9 @@ class Generator:
     normalized_frequencies = normalized_frequencies[sorted_idxs]
     sorted_words = np.array(words)[sorted_idxs]
     bootstrap_cdf = np.cumsum(normalized_frequencies / sum(normalized_frequencies))
-    lower_bound = 0 if difficulty == 1 else (difficulty - 1) / MAX_DIFFICULTY
-    upper_bound = difficulty / MAX_DIFFICULTY
+    difficulty_bin_width = (max(bootstrap_cdf) - min(bootstrap_cdf)) / MAX_DIFFICULTY
+    lower_bound = min(bootstrap_cdf) + (difficulty - 1) * difficulty_bin_width
+    upper_bound = lower_bound + difficulty_bin_width
     lower_idx = np.where(bootstrap_cdf >= lower_bound)[0][0]
     upper_idx = np.where(bootstrap_cdf >= upper_bound)[0][0] if difficulty < MAX_DIFFICULTY else len(words)
     return np.random.choice(sorted_words[lower_idx:upper_idx])
@@ -39,4 +40,21 @@ def load_generator_csv():
     for word,count in reader:
       words.append(word)
       counts.append(int(count))
+  return words, np.array(counts)
+
+def load_generator_txt():
+  words, counts = [], []
+  with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "data", "ANC-written-count.txt")) as f:
+    content = f.readlines()
+
+  found = {}
+  for line in content:
+    word_info = line.split()
+    word = word_info[0]
+    if "'" in word or len(word) < 2 or word in found:
+      continue
+
+    found[word] = True
+    words.append(word)
+    counts.append(int(word_info[-1]))
   return words, np.array(counts)
