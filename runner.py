@@ -2,7 +2,9 @@ import argparse
 
 from constants import DEFAULT_MAX_MISSES
 from game import Hangman, it_to_str
-from generator import Generator, load_generator_csv, load_generator_txt
+from generator import (Generator, load_generator_csv, load_generator_txt,
+                       preprocess)
+from hints import Hinter
 from solver import FreqWordSet, Solver, WordSet
 
 
@@ -13,6 +15,9 @@ def get_letter(prompt: str) -> int:
       if len(letter) != 1:
         continue
       letter = letter.lower()
+      # Bypass for hints
+      if ord(letter) == ord('?'):
+        break
       if ord(letter) < ord('a') or ord(letter) > ord('z'):
         continue
       break
@@ -21,26 +26,54 @@ def get_letter(prompt: str) -> int:
 
   return ord(letter)
 
+def get_bool(prompt: str) -> bool:
+  while True:
+    try:
+      res = str(input(prompt))
+      res = res.lower()
+      if res in ['y','yes', 'true', 't']:
+        return True
+      elif res in ['n', 'no', 'false', 'f']:
+        return False
+      else: continue
+    except ValueError:
+      print('Strings only please')
+
 def run(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
+  words, counts = preprocess(words, counts)
+
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
-  G = Hangman(word, max_misses)
-  while not G.gameover:
-    print(G)
-    letter = get_letter('Enter your guess: ')
-    G.guess(letter)
+  hinter = Hinter('glove-wiki-gigaword-300', word)
+  playing = True
+  while playing:
+    G = Hangman(word, max_misses)
+    hinter.word = word
+    while not G.gameover:
+      print(G)
+      letter = get_letter('Enter your guess ("?" for hint): ')
+      if letter == ord('?'):
+        hint_word = hinter.get_hint()
+        print(f'The word is similar in meaning to: {hint_word}')
+        continue
+      G.guess(letter)
 
-  if G.is_win:
-    print('You won!')
-  else:
-    print(f'{G.misses} of {max_misses} used.\nYou lost :(')
+    if G.is_win:
+      print('You won!')
+    else:
+      print(f'{G.misses} of {max_misses} used.\nYou lost :(')
 
-  print(f'The word: {it_to_str(G.words)}')
+    print(f'The word: {it_to_str(G.words)}')
+    playing = get_bool('Play again? [Y/N]')
+    word = Generator.generate_word_by_frequency(words, counts, difficulty)
+
+
 
 def solve(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
+  words, counts = preprocess(words, counts)
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
