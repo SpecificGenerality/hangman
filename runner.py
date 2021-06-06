@@ -65,11 +65,11 @@ def run(difficulty: int, max_misses: int, word: str = None):
     else:
       print(f'{G.misses} of {max_misses} used.\nYou lost :(')
 
+    print(f'The word: {it_to_str(G.words)}')
     playing = get_bool('Play again? [Y/N]')
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
 
-    print(f'The word: {it_to_str(G.words)}')
 
 def solve(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
