@@ -18,6 +18,7 @@ class Hinter:
       model_name = os.path.split(model_path)[-1]
       self._model = api.load(model_name)
 
+    self._n_hints = n_hints
     self._hints = self._model.most_similar(self._word, topn=n_hints)
 
   @property
@@ -27,6 +28,7 @@ class Hinter:
   @word.setter
   def word(self, new_word: str):
     self._word = new_word
+    self._hints = self._model.most_similar(self._word, topn=self._n_hints)
 
   def get_hint(self) -> str:
     if self._word is None:

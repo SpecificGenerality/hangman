@@ -54,6 +54,10 @@ def load_generator_txt():
     word = word_info[0]
     count = int(word_info[-1])
 
+    if word in found:
+      continue
+
+    found[word] = True
     words.append(word)
     counts.append(count)
   return words, np.array(counts)
@@ -68,4 +72,4 @@ def preprocess(words: List[str], counts: np.array):
       continue
     cleaned_words.append(word)
     cleaned_freq.append(count)
-  return cleaned_words, cleaned_freq
+  return cleaned_words, np.array(cleaned_freq)

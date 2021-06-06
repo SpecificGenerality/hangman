@@ -26,29 +26,50 @@ def get_letter(prompt: str) -> int:
 
   return ord(letter)
 
+def get_bool(prompt: str) -> bool:
+  while True:
+    try:
+      res = str(input(prompt))
+      res = res.lower()
+      if res in ['y','yes', 'true', 't']:
+        return True
+      elif res in ['n', 'no', 'false', 'f']:
+        return False
+      else: continue
+    except ValueError:
+      print('Strings only please')
+
 def run(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
   words, counts = preprocess(words, counts)
+
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
-  G = Hangman(word, max_misses)
   hinter = Hinter('glove-wiki-gigaword-300', word)
-  while not G.gameover:
-    print(G)
-    letter = get_letter('Enter your guess: ')
-    if letter == ord('?'):
-      hint_word = hinter.get_hint()
-      print(f'The word is similar to: {hint_word}')
-      continue
-    G.guess(letter)
+  playing = True
+  while playing:
+    G = Hangman(word, max_misses)
+    hinter.word = word
+    while not G.gameover:
+      print(G)
+      letter = get_letter('Enter your guess: ')
+      if letter == ord('?'):
+        hint_word = hinter.get_hint()
+        print(f'The word is similar to: {hint_word}')
+        continue
+      G.guess(letter)
 
-  if G.is_win:
-    print('You won!')
-  else:
-    print(f'{G.misses} of {max_misses} used.\nYou lost :(')
+    if G.is_win:
+      print('You won!')
+    else:
+      print(f'{G.misses} of {max_misses} used.\nYou lost :(')
 
-  print(f'The word: {it_to_str(G.words)}')
+    playing = get_bool('Play again? [Y/N]')
+    word = Generator.generate_word_by_frequency(words, counts, difficulty)
+
+
+    print(f'The word: {it_to_str(G.words)}')
 
 def solve(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
