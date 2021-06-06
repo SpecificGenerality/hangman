@@ -2,6 +2,7 @@ import csv
 import os
 from typing import List
 
+import nltk
 import numpy as np
 
 from constants import MAX_DIFFICULTY, MIN_DIFFICULTY
@@ -51,10 +52,20 @@ def load_generator_txt():
   for line in content:
     word_info = line.split()
     word = word_info[0]
-    if "'" in word or len(word) < 2 or word in found:
-      continue
+    count = int(word_info[-1])
 
-    found[word] = True
     words.append(word)
-    counts.append(int(word_info[-1]))
+    counts.append(count)
   return words, np.array(counts)
+
+def preprocess(words: List[str], counts: np.array):
+  cleaned_words = []
+  cleaned_freq = []
+  for i, word in enumerate(words):
+    word = word.lower()
+    count = counts[i]
+    if count < 2 or word in nltk.corpus.stopwords.words('english') or  "'" in word or "-" in word:
+      continue
+    cleaned_words.append(word)
+    cleaned_freq.append(count)
+  return cleaned_words, cleaned_freq

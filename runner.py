@@ -2,7 +2,9 @@ import argparse
 
 from constants import DEFAULT_MAX_MISSES
 from game import Hangman, it_to_str
-from generator import Generator, load_generator_csv, load_generator_txt
+from generator import (Generator, load_generator_csv, load_generator_txt,
+                       preprocess)
+from hints import Hinter
 from solver import FreqWordSet, Solver, WordSet
 
 
@@ -13,6 +15,9 @@ def get_letter(prompt: str) -> int:
       if len(letter) != 1:
         continue
       letter = letter.lower()
+      # Bypass for hints
+      if ord(letter) == ord('?'):
+        break
       if ord(letter) < ord('a') or ord(letter) > ord('z'):
         continue
       break
@@ -23,13 +28,19 @@ def get_letter(prompt: str) -> int:
 
 def run(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
+  words, counts = preprocess(words, counts)
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
   G = Hangman(word, max_misses)
+  hinter = Hinter('glove-wiki-gigaword-300', word)
   while not G.gameover:
     print(G)
     letter = get_letter('Enter your guess: ')
+    if letter == ord('?'):
+      hint_word = hinter.get_hint()
+      print(f'The word is similar to: {hint_word}')
+      continue
     G.guess(letter)
 
   if G.is_win:
@@ -41,6 +52,7 @@ def run(difficulty: int, max_misses: int, word: str = None):
 
 def solve(difficulty: int, max_misses: int, word: str = None):
   words, counts = load_generator_txt()
+  words, counts = preprocess(words, counts)
   if word is None:
     word = Generator.generate_word_by_frequency(words, counts, difficulty)
 
