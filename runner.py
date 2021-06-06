@@ -53,10 +53,10 @@ def run(difficulty: int, max_misses: int, word: str = None):
     hinter.word = word
     while not G.gameover:
       print(G)
-      letter = get_letter('Enter your guess: ')
+      letter = get_letter('Enter your guess ("?" for hint): ')
       if letter == ord('?'):
         hint_word = hinter.get_hint()
-        print(f'The word is similar to: {hint_word}')
+        print(f'The word is similar in meaning to: {hint_word}')
         continue
       G.guess(letter)
 
